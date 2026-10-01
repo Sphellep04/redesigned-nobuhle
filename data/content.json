@@ -1,0 +1,85 @@
+{
+  "settings": {
+    "whatsapp": "264811685043",
+    "email": "nonhle@nonhle-cosmetics.store",
+    "hours": "",
+    "location": "",
+    "instagram": ""
+  },
+  "products": [
+    {
+      "id": "hairgrowth-oil",
+      "name": "Hairgrowth Oil",
+      "price": 0,
+      "size": "100 ml",
+      "summary": "Blended pure oils and essential oils for the scalp.",
+      "description": "Our signature oil: a blend of pure oils and essential oils to massage into the scalp. It helps stimulate the follicles and reduce breakage, and seals moisture into the ends. Suits every hair type.",
+      "ingredients": "Blended pure oils and essential oils.",
+      "usage": "Part your hair into sections and massage a few drops into your scalp. Smooth what's left over the ends. Use two or three times a week.",
+      "image": "uploads/hairgrowth-oil.webp"
+    },
+    {
+      "id": "black-african-shampoo",
+      "name": "Black African Shampoo",
+      "price": 0,
+      "size": "",
+      "summary": "A gentle wash made with black African soap.",
+      "description": "Made with traditional black African soap and essential oils. It lifts away build-up while keeping your hair's natural oils in balance, and it's sulfate free.",
+      "ingredients": "Black African soap and essential oils.",
+      "usage": "Work into a wet scalp with your fingertips, let the lather run through the lengths, then rinse well.",
+      "image": "uploads/black-african-shampoo.webp"
+    },
+    {
+      "id": "deep-conditioner",
+      "name": "Deep Conditioner",
+      "price": 0,
+      "size": "",
+      "summary": "A rich treatment of pure oils and essential oils.",
+      "description": "An intensive treatment for dry, thirsty or chemically treated hair. It restores softness and shine, and makes detangling easier.",
+      "ingredients": "Pure oils and essential oils.",
+      "usage": "Apply to damp hair from mid-length to ends. Cover with a cap for 15–30 minutes, then rinse with cool water.",
+      "image": ""
+    },
+    {
+      "id": "hairgrowth-moisturizer",
+      "name": "Hairgrowth Moisturizer",
+      "price": 0,
+      "size": "",
+      "summary": "Shea butter, essential oils and herbs.",
+      "description": "A creamy daily moisturiser of shea butter, essential oils and herbs. It softens and nourishes dry hair and helps strengthen strands against breakage and split ends.",
+      "ingredients": "Shea butter, essential oils and herbs.",
+      "usage": "Smooth a small amount through damp or dry hair, focusing on the ends. Follow with the Hairgrowth Oil to seal in moisture.",
+      "image": "uploads/hairgrowth-moisturizer.webp"
+    }
+  ],
+  "services": [
+    {
+      "id": "hair-braiding",
+      "name": "Hair Braiding",
+      "price": 0,
+      "priceFrom": true,
+      "duration": "",
+      "description": "Box braids, cornrows, knotless, twists and more, in any length."
+    },
+    {
+      "id": "makeup",
+      "name": "Makeup Application",
+      "price": 0,
+      "priceFrom": true,
+      "duration": "",
+      "description": "Soft everyday looks to full glam for weddings, events and shoots."
+    },
+    {
+      "id": "nails",
+      "name": "Nail Art & Design",
+      "price": 0,
+      "priceFrom": true,
+      "duration": "",
+      "description": "Manicures, gel and custom nail art."
+    }
+  ],
+  "gallery": [
+    { "src": "uploads/gallery-nails-french-gold.webp", "caption": "French tips with gold foil", "w": 1200, "h": 1200 },
+    { "src": "uploads/gallery-nails-nude-geometric.webp", "caption": "Nude set with geometric accents", "w": 1000, "h": 1569 }
+  ]
+}
