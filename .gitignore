@@ -14,3 +14,6 @@ Some media imaages/
 *.log
 .DS_Store
 Thumbs.db
+
+# Screenshots for sharing with the client (not part of the site)
+preview-screenshots/
