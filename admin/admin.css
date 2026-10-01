@@ -41,6 +41,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .gate-card label { font-weight: 600; font-size: .9rem; margin-top: 8px; }
 .gate-card .btn { margin-top: 12px; }
 .gate-card .error { color: var(--danger); font-weight: 500; }
+.gate-card .hint { font-size: .85rem; color: var(--muted); margin-top: -4px; }
+.gate-card label small { font-weight: 400; color: var(--muted); }
 .gate-card .back { margin-top: 8px; font-size: .9rem; color: var(--muted); }
 input, textarea, select {
   width: 100%; min-height: 44px; padding: 10px 12px;

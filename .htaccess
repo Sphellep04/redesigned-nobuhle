@@ -3,11 +3,35 @@
 Options -Indexes
 DirectoryIndex index.html index.php
 
+# Always use HTTPS. Turn on SSL in cPanel (SSL/TLS Status → Run AutoSSL) BEFORE uploading this file.
+# Skipped for local previews and for /.well-known/ (used to issue the certificate).
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:[0-9]+)?$ [NC]
+    RewriteCond %{REQUEST_URI} !^/\.well-known/
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Hide PHP error messages from visitors (they can reveal server paths).
+<IfModule mod_php.c>
+    php_flag display_errors Off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag display_errors Off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag display_errors Off
+</IfModule>
+
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    # Tell browsers to only use HTTPS for a year (sent on secure responses only).
+    Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
 
     # Content changes when the editor saves, so browsers must re-check it.
     <FilesMatch "\.json$">

@@ -18,7 +18,7 @@ admin/                The site editor (PHP)
 ## Using the site editor
 
 1. Go to `https://nonhle-cosmetics.store/admin/`.
-2. **First visit only:** you'll be asked to create a password (at least 10 characters). Do this straight after uploading the site, because until then anyone who opens `/admin/` could set it.
+2. **First visit only:** you'll be asked for a **setup code** and a new password (at least 10 characters). To get the code, open cPanel → **File Manager** → `public_html/admin/storage/setup-code.php`. The code is written there, and the file deletes itself once the password is created. Only someone with the hosting login can see it, so nobody else can claim the editor.
 3. Log in, make your changes, then select **Save changes**. Changes are live as soon as they're saved.
 
 | To… | Go to | Notes |
@@ -30,7 +30,7 @@ admin/                The site editor (PHP)
 | Add hours, location or Instagram | Settings | Each one appears on the site only once it's filled in. |
 | Change the editor password | Settings → Change password | |
 
-**Forgot the password?** In cPanel's File Manager, delete `admin/config.php`. The next visit to `/admin/` will ask for a new password.
+**Forgot the password?** In cPanel's File Manager, delete `admin/config.php`. The next visit to `/admin/` creates a new setup code in `admin/storage/setup-code.php` and asks for a new password.
 
 ## Before launch: still to do
 
@@ -48,7 +48,7 @@ This repository is the source of truth: what's on `main` is what goes live. Depl
 1. On GitHub, select **Code → Download ZIP**.
 2. In cPanel's File Manager, back up `public_html` and delete the old site's `upload_handler.php`, because the old version must not stay online.
 3. Upload the zip to `public_html`, **Extract** it, and move the contents of the extracted folder (e.g. `redesigned-nobuhle-main/`) up into `public_html`, so `index.html` sits directly in `public_html`.
-4. Open `/admin/` straight away and create the editor password.
+4. Open `/admin/` and create the editor password, using the setup code from `admin/storage/setup-code.php`.
 
 **Option B: cPanel Git Version Control (for repeat deploys)**
 
@@ -70,6 +70,10 @@ Requirements: PHP 7.4 or later with the `fileinfo` extension (standard on cPanel
   - Every photo is re-encoded, which strips anything hidden inside it, and saved under a random name.
   - `uploads/.htaccess` stops anything in that folder from running as code.
 - **Password:** stored only as a bcrypt hash in `admin/config.php`, a file that's created on the server and never committed. Repeated wrong guesses lock the login for 15 minutes.
+- **First-run setup:** creating the password needs a one-time code that's written to `admin/storage/setup-code.php`. It's a PHP file, so requesting it over the web prints nothing even if `.htaccess` isn't honoured.
+- **HTTPS:** `.htaccess` redirects every page to `https://` and sends HSTS. The editor also refuses to run over plain HTTP itself, except on `localhost`.
+- **Content-Security-Policy:** the site (via a `<meta>` tag) and the editor (via a header) only allow their own scripts and styles, plus Google Fonts. Any injected script is blocked.
+- **Errors:** PHP error output is turned off for visitors and logged instead.
 
 ## Local preview
 

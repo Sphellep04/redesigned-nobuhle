@@ -2,6 +2,11 @@ NONHLE'S COSMETICS: DEPLOYMENT CHECKLIST (Namecheap cPanel)
 ============================================================
 
 BEFORE YOU UPLOAD
+[ ] URGENT, even before the new site is ready: delete public_html/upload_handler.php from the
+    current live site. It lets anyone who knows the old password run code on the server.
+[ ] Turn on SSL first: cPanel → SSL/TLS Status → Run AutoSSL, and check https://nonhle-cosmetics.store
+    loads with a padlock. The new .htaccess sends every visitor to https://, so without a working
+    certificate the site would not open.
 [ ] Back up the current site: in File Manager, compress public_html and download the zip.
 [ ] If you're replacing the old site, delete its old files from public_html:
     - upload_handler.php   (the old upload script; it must not stay on the server)
@@ -28,8 +33,9 @@ PERMISSIONS
 [ ] Files: data/content.json → 644
 
 STRAIGHT AFTER UPLOAD (do this first)
-[ ] Open https://nonhle-cosmetics.store/admin/ and create the editor password.
-    Until it's set, anyone who opens /admin/ could set it.
+[ ] Open https://nonhle-cosmetics.store/admin/. It asks for a setup code and a new password.
+    Get the code from cPanel → File Manager → public_html/admin/storage/setup-code.php.
+    (Only someone with the hosting login can read it. The file deletes itself after setup.)
 [ ] Give the password to the owner privately. Don't email it or write it in a file on the server.
 
 CHECK THE SITE
@@ -53,7 +59,9 @@ CHECK THE SECURITY RULES (these depend on the server, so test them live)
     If any of these load instead, ask Namecheap support to enable .htaccess overrides (AllowOverride).
 
 HTTPS
-[ ] SSL is active (Namecheap's free PositiveSSL / AutoSSL) and http:// redirects to https://.
+[ ] http://nonhle-cosmetics.store redirects to https://nonhle-cosmetics.store (padlock showing).
+[ ] If the site doesn't open after upload because of a certificate error: fix SSL in cPanel, or
+    temporarily put a # in front of the RewriteRule line in .htaccess until it's fixed.
 
 BEFORE LAUNCH: CONTENT
 [ ] Real prices set (0 shows "Price on request").

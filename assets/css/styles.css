@@ -53,6 +53,7 @@ figure { margin: 0; }
 h1, h2, h3 { margin: 0; font-weight: 500; }
 p { margin: 0; }
 [hidden] { display: none !important; }
+.sprite { position: absolute; }
 
 :focus-visible { outline: 2px solid var(--gold-ink); outline-offset: 3px; }
 .services :focus-visible, .site-footer :focus-visible, .lightbox :focus-visible { outline-color: var(--gold); }

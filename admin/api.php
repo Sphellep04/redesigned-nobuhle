@@ -5,6 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/lib.php';
 
 security_headers();
+require_https(true);
 start_session();
 
 if (!is_logged_in()) {

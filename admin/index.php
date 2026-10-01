@@ -4,24 +4,37 @@
 declare(strict_types=1);
 require __DIR__ . '/lib.php';
 
+require_https();
 security_headers();
 start_session();
 
 $error = '';
 $mode = password_is_set() ? (is_logged_in() ? 'editor' : 'login') : 'setup';
+if ($mode === 'setup') {
+    setup_code();  // make sure the one-time code file exists for the owner to read in cPanel
+}
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     if (!check_csrf($_POST['csrf'] ?? null)) {
         $error = 'This page expired. Try again.';
     } elseif ($mode === 'setup') {
         $pw = (string) ($_POST['password'] ?? '');
-        if ($problem = password_problem($pw)) {
+        $wait = login_locked_for();
+        if ($wait > 0) {
+            $error = 'Too many attempts. Try again in ' . ceil($wait / 60) . ' minutes.';
+        } elseif (!setup_code_matches((string) ($_POST['code'] ?? ''))) {
+            record_login_failure();
+            usleep(600000);
+            $error = 'That setup code is incorrect. Copy it from admin/storage/setup-code.php in cPanel.';
+        } elseif ($problem = password_problem($pw)) {
             $error = $problem;
         } elseif ($pw !== (string) ($_POST['confirm'] ?? '')) {
             $error = 'The two passwords don\'t match.';
         } elseif (!save_password($pw)) {
             $error = 'The password couldn\'t be saved. Check that the admin folder is writable.';
         } else {
+            clear_setup_code();
+            clear_login_failures();
             session_regenerate_id(true);
             $_SESSION['admin'] = true;
             header('Location: ./');
@@ -68,9 +81,12 @@ $h = static function (string $s): string {
       <p class="eyebrow">Nonhle's Cosmetics</p>
       <?php if ($mode === 'setup'): ?>
         <h1>Create your editor password</h1>
-        <p class="muted">This is the first time the editor has been opened. Choose a password of at least 10 characters. You'll use it to update products, prices and photos.</p>
-        <label for="pw">New password</label>
-        <input id="pw" name="password" type="password" minlength="10" required autocomplete="new-password" autofocus>
+        <p class="muted">This is the first time the editor has been opened. To prove you manage the website, enter the setup code from your hosting account, then choose a password.</p>
+        <label for="code">Setup code</label>
+        <p class="hint" id="code-hint">In cPanel, open <strong>File Manager</strong> → <strong>public_html/admin/storage/setup-code.php</strong> and copy the code shown there.</p>
+        <input id="code" name="code" type="text" required autocomplete="off" spellcheck="false" aria-describedby="code-hint" autofocus>
+        <label for="pw">New password <small>At least 10 characters</small></label>
+        <input id="pw" name="password" type="password" minlength="10" required autocomplete="new-password">
         <label for="pw2">Type it again</label>
         <input id="pw2" name="confirm" type="password" minlength="10" required autocomplete="new-password">
         <button class="btn" type="submit">Create password</button>

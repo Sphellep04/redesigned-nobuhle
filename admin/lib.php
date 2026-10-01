@@ -4,11 +4,17 @@
 
 declare(strict_types=1);
 
+// Never show PHP errors to visitors (they can reveal server paths); log them for the host instead.
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
 const SITE_ROOT = __DIR__ . '/..';
 const CONTENT_FILE = SITE_ROOT . '/data/content.json';
 const UPLOAD_DIR = SITE_ROOT . '/uploads';
 const STORAGE_DIR = __DIR__ . '/storage';
 const CONFIG_FILE = __DIR__ . '/config.php';
+// A .php file, so even if storage/.htaccess isn't honoured, requesting it over the web prints nothing.
+const SETUP_CODE_FILE = STORAGE_DIR . '/setup-code.php';
 
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;  // phone photos can be large; we downscale after
 const MAX_IMAGE_EDGE = 1600;
@@ -16,18 +22,45 @@ const SESSION_IDLE_SECONDS = 2 * 60 * 60;
 const LOGIN_MAX_FAILS = 8;
 const LOGIN_LOCK_SECONDS = 15 * 60;
 
+function is_https(): bool
+{
+    return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+}
+
+function is_local_preview(): bool
+{
+    $host = strtolower(preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? '')) ?? '');
+    return in_array($host, ['localhost', '127.0.0.1', '[::1]'], true);
+}
+
+/**
+ * The editor sends a password, so it only works over HTTPS (except a local preview).
+ * Pages redirect; API calls are refused.
+ */
+function require_https(bool $api = false): void
+{
+    if (is_https() || is_local_preview()) {
+        return;
+    }
+    if ($api) {
+        json_out(['error' => 'The editor only works over a secure (https://) connection.'], 403);
+    }
+    $host = preg_replace('/[^A-Za-z0-9.\-:\[\]]/', '', (string) ($_SERVER['HTTP_HOST'] ?? ''));
+    header('Location: https://' . $host . ($_SERVER['REQUEST_URI'] ?? '/admin/'), true, 301);
+    exit;
+}
+
 function start_session(): void
 {
     if (session_status() === PHP_SESSION_ACTIVE) {
         return;
     }
-    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
     session_name('nonhle_admin');
     session_set_cookie_params([
         'lifetime' => 0,
         'path' => '/',
-        'secure' => $https,
+        'secure' => is_https(),
         'httponly' => true,
         'samesite' => 'Strict',
     ]);
@@ -65,6 +98,54 @@ function security_headers(): void
     header('Referrer-Policy: same-origin');
     header('X-Robots-Tag: noindex, nofollow');
     header('Cache-Control: no-store');
+    // Only this site's own scripts and styles (plus Google Fonts) may load or run.
+    header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; "
+        . "font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; "
+        . "base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
+    if (is_https()) {
+        header('Strict-Transport-Security: max-age=31536000');
+    }
+}
+
+// ---------- first-run setup code ----------
+
+/**
+ * One-time code that proves whoever creates the password also controls the hosting:
+ * it's written to a file that can only be read through cPanel's File Manager.
+ */
+function setup_code(): string
+{
+    if (is_file(SETUP_CODE_FILE)) {
+        $code = include SETUP_CODE_FILE;
+        if (is_string($code) && $code !== '') {
+            return $code;
+        }
+    }
+    if (!is_dir(STORAGE_DIR)) {
+        mkdir(STORAGE_DIR, 0755, true);
+    }
+    $code = implode('-', str_split(strtoupper(bin2hex(random_bytes(6))), 4));
+    $php = "<?php\n// Nonhle's Cosmetics site editor: one-time setup code.\n"
+        . "// Type this code on the \"Create your editor password\" screen.\n"
+        . "// This file deletes itself once the password is created.\n"
+        . "//\n// Setup code: {$code}\n\nreturn " . var_export($code, true) . ";\n";
+    write_atomic(SETUP_CODE_FILE, $php);
+    return $code;
+}
+
+function setup_code_matches(string $entered): bool
+{
+    $norm = static function (string $s): string {
+        return strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $s) ?? '');
+    };
+    return $entered !== '' && hash_equals($norm(setup_code()), $norm($entered));
+}
+
+function clear_setup_code(): void
+{
+    if (is_file(SETUP_CODE_FILE)) {
+        @unlink(SETUP_CODE_FILE);
+    }
 }
 
 // ---------- password ----------
