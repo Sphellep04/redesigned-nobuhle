@@ -1,0 +1,54 @@
+NONHLE'S COSMETICS: DEPLOYMENT CHECKLIST (Namecheap cPanel)
+============================================================
+
+BEFORE YOU UPLOAD
+[ ] Back up the current site: in File Manager, compress public_html and download the zip.
+[ ] If you're replacing the old site, delete its old files from public_html:
+    - upload_handler.php   (the old upload script; it must not stay on the server)
+    - the old uploads/ folder, if you don't need those images
+    - any old .htaccess, which the new one replaces
+
+UPLOAD
+[ ] Upload these to public_html (keep the folder structure):
+      index.html, .htaccess, assets/, data/, uploads/, admin/
+    Do NOT upload: README.md, DEPLOYMENT_CHECKLIST.txt, .git, .gitignore, "Some media imaages/"
+[ ] Hidden files: in File Manager, select Settings → "Show Hidden Files (dotfiles)"
+    and check that .htaccess, uploads/.htaccess, admin/.htaccess and admin/storage/.htaccess all uploaded.
+
+PERMISSIONS
+[ ] Folders: data/, uploads/, admin/, admin/storage/ → 755
+[ ] Files: data/content.json → 644
+
+STRAIGHT AFTER UPLOAD (do this first)
+[ ] Open https://nonhle-cosmetics.store/admin/ and create the editor password.
+    Until it's set, anyone who opens /admin/ could set it.
+[ ] Give the password to the owner privately. Don't email it or write it in a file on the server.
+
+CHECK THE SITE
+[ ] Home page loads with photos, products, services and the gallery.
+[ ] Add two products to the basket → "Send order on WhatsApp" opens WhatsApp with the order.
+[ ] Book a service → WhatsApp opens with the booking details.
+[ ] Contact form → WhatsApp opens with the message.
+[ ] Try it on a phone too: open the menu, add to basket, use the floating WhatsApp button.
+
+CHECK THE EDITOR
+[ ] Change a price, save, and refresh the site to see it.
+[ ] Upload a product photo and a gallery photo, save, and check the site.
+[ ] Log out and back in.
+
+CHECK THE SECURITY RULES (these depend on the server, so test them live)
+[ ] https://nonhle-cosmetics.store/admin/config.php  → should show 403 Forbidden
+[ ] https://nonhle-cosmetics.store/admin/lib.php     → should show 403 Forbidden
+[ ] https://nonhle-cosmetics.store/README.md         → should show 403 or 404
+[ ] https://nonhle-cosmetics.store/uploads/          → should not list files
+[ ] https://nonhle-cosmetics.store/upload_handler.php → should show 404 (old script removed)
+    If any of these load instead, ask Namecheap support to enable .htaccess overrides (AllowOverride).
+
+HTTPS
+[ ] SSL is active (Namecheap's free PositiveSSL / AutoSSL) and http:// redirects to https://.
+
+BEFORE LAUNCH: CONTENT
+[ ] Real prices set (0 shows "Price on request").
+[ ] Deep Conditioner photo added; Hairgrowth Oil and Shampoo photos replaced with larger ones.
+[ ] About text checked by the owner.
+[ ] Opening hours, location and Instagram filled in under Settings, if wanted.

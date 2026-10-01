@@ -1,0 +1,16 @@
+# Created on the server by the editor; holds the password hash. Never commit.
+admin/config.php
+admin/storage/*
+!admin/storage/.htaccess
+
+# Content lock/temp files written during saves
+data/*.lock
+data/*.tmp
+
+# Raw source photos supplied by the client (optimised copies live in uploads/ and assets/img/)
+Some media imaages/
+
+# Local notes
+*.log
+.DS_Store
+Thumbs.db
