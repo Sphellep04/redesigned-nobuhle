@@ -102,9 +102,11 @@
     });
     if (s.instagram) {
       const handle = String(s.instagram).replace(/^@|^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '');
-      const a = $('[data-setting-link="instagram"]');
-      a.href = `https://instagram.com/${encodeURIComponent(handle)}`;
-      a.textContent = '@' + handle;
+      $$('[data-setting-link="instagram"]').forEach((a) => {
+        a.href = `https://instagram.com/${encodeURIComponent(handle)}`;
+        a.textContent = a.closest('.footer-contact') ? `Instagram @${handle}` : '@' + handle;
+        a.hidden = false;
+      });
       $('[data-setting-row="instagram"]').hidden = false;
     }
   }
@@ -121,15 +123,18 @@
       return;
     }
     grid.innerHTML = state.products.map((p) => `
-      <article class="product" data-id="${esc(p.id)}">
+      <article class="product${p.soldOut ? ' is-sold-out' : ''}" data-id="${esc(p.id)}">
         <button class="product-media" type="button" data-view="${esc(p.id)}" aria-label="View ${esc(p.name)}" tabindex="-1">
           ${media(p.image, p.name)}
+          ${p.soldOut ? '<span class="badge">Sold out</span>' : ''}
         </button>
         <h3><button type="button" data-view="${esc(p.id)}">${esc(p.name)}</button></h3>
         <p class="product-summary">${esc(p.summary)}</p>
         <div class="product-foot">
           ${priceHtml(p)}
-          <button class="add-btn" type="button" data-add="${esc(p.id)}">Add to basket</button>
+          ${p.soldOut
+            ? '<button class="add-btn" type="button" disabled>Sold out</button>'
+            : `<button class="add-btn" type="button" data-add="${esc(p.id)}">Add to basket</button>`}
         </div>
       </article>`).join('');
 
@@ -141,6 +146,42 @@
       const p = findProduct(btn.dataset.productLink);
       btn.textContent = p ? `View ${p.name} →` : '';
     });
+  }
+
+  // Structured data so search engines can show product names and prices.
+  // Google only accepts Product markup with an offer, so unpriced products are left out.
+  function addProductSchema() {
+    const priced = state.products.filter(hasPrice);
+    $('#product-schema')?.remove();
+    if (!priced.length) return;
+    const abs = (src) => new URL(src, document.baseURI).href;
+    const data = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: priced.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Product',
+          name: p.name,
+          description: p.description || p.summary || undefined,
+          image: safeSrc(p.image) ? abs(p.image) : undefined,
+          brand: { '@type': 'Brand', name: "Nonhle's Cosmetics" },
+          offers: {
+            '@type': 'Offer',
+            price: Number(p.price).toFixed(2),
+            priceCurrency: 'NAD',
+            availability: p.soldOut ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+            url: abs('#shop'),
+          },
+        },
+      })),
+    };
+    const s = document.createElement('script');
+    s.type = 'application/ld+json';
+    s.id = 'product-schema';
+    s.textContent = JSON.stringify(data).replace(/</g, '\\u003c');
+    document.head.append(s);
   }
 
   const findProduct = (id) => state.products.find((p) => p.id === id);
@@ -161,6 +202,10 @@
     $('[data-pm-usage]', dlg).textContent = p.usage || '';
     $('[data-pm-usage-wrap]', dlg).hidden = !p.usage;
     $('[data-pm-qty]', dlg).textContent = '1';
+    $('.qty', dlg).hidden = !!p.soldOut;
+    const addBtn = $('[data-pm-add]', dlg);
+    addBtn.disabled = !!p.soldOut;
+    addBtn.textContent = p.soldOut ? 'Sold out' : 'Add to basket';
     openDialog(dlg);
   }
 
@@ -170,7 +215,7 @@
       state.pmQty = Math.min(99, Math.max(1, state.pmQty + Number(q.dataset.qty)));
       $('[data-pm-qty]').textContent = state.pmQty;
     }
-    if (e.target.closest('[data-pm-add]') && state.pm) {
+    if (e.target.closest('[data-pm-add]') && state.pm && !state.pm.soldOut) {
       addToBasket(state.pm.id, state.pmQty);
       closeDialog($('[data-product-modal]'));
     }
@@ -198,11 +243,11 @@
   function basketLines() {
     return Object.entries(state.basket)
       .map(([id, qty]) => ({ p: findProduct(id), qty }))
-      .filter((l) => l.p && l.qty > 0);
+      .filter((l) => l.p && !l.p.soldOut && l.qty > 0);
   }
   function addToBasket(id, qty) {
     const p = findProduct(id);
-    if (!p) return;
+    if (!p || p.soldOut) return;
     state.basket[id] = Math.min(99, (state.basket[id] || 0) + qty);
     saveBasket();
     renderBasket(true);
@@ -216,8 +261,8 @@
   }
 
   function renderBasket(bump = false) {
-    // Drop items that no longer exist (e.g. removed in admin).
-    Object.keys(state.basket).forEach((id) => { if (!findProduct(id)) delete state.basket[id]; });
+    // Drop items that were removed or marked sold out in the editor since the visitor added them.
+    Object.keys(state.basket).forEach((id) => { const p = findProduct(id); if (!p || p.soldOut) delete state.basket[id]; });
     const lines = basketLines();
     const count = lines.reduce((n, l) => n + l.qty, 0);
     const total = lines.reduce((n, l) => n + (hasPrice(l.p) ? l.p.price * l.qty : 0), 0);
@@ -480,6 +525,7 @@
     if (!ok) return;
     applySettings();
     renderProducts();
+    addProductSchema();
     renderServices();
     renderGallery();
     renderBasket();

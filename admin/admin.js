@@ -53,7 +53,7 @@
 
   // ---------- products & services ----------
   const blank = {
-    products: { id: '', name: 'New product', price: 0, size: '', summary: '', description: '', ingredients: '', usage: '', image: '' },
+    products: { id: '', name: 'New product', price: 0, soldOut: false, size: '', summary: '', description: '', ingredients: '', usage: '', image: '' },
     services: { id: '', name: 'New service', price: 0, priceFrom: true, duration: '', description: '' },
   };
 
@@ -84,7 +84,7 @@
     $('[data-title]', node).textContent = item.name || 'Untitled';
     $('[data-sub]', node).textContent = kind === 'services'
       ? [money(item.price) + (item.priceFrom && item.price > 0 ? ' (from)' : ''), item.duration].filter(Boolean).join(' · ')
-      : [money(item.price), item.image ? '' : 'No photo yet'].filter(Boolean).join(' · ');
+      : [money(item.price), item.soldOut ? 'Sold out' : '', item.image ? '' : 'No photo yet'].filter(Boolean).join(' · ');
     const thumb = $('[data-thumb]', node);
     if (thumb) thumb.innerHTML = item.image ? `<img src="../${item.image}" alt="">` : '';
     const prev = $('[data-preview]', node);

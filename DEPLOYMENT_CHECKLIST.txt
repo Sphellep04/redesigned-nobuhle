@@ -8,12 +8,17 @@ BEFORE YOU UPLOAD
     - the old uploads/ folder, if you don't need those images
     - any old .htaccess, which the new one replaces
 
-UPLOAD
-[ ] Upload these to public_html (keep the folder structure):
-      index.html, .htaccess, assets/, data/, uploads/, admin/
-    Do NOT upload: README.md, DEPLOYMENT_CHECKLIST.txt, .git, .gitignore, "Some media imaages/"
-[ ] Hidden files: in File Manager, select Settings → "Show Hidden Files (dotfiles)"
-    and check that .htaccess, uploads/.htaccess, admin/.htaccess and admin/storage/.htaccess all uploaded.
+UPLOAD (easiest: upload the zip and extract it on the server)
+[ ] In cPanel → File Manager, open public_html.
+[ ] Upload nonhle-cosmetics-site.zip, right-click it → Extract, and extract into public_html.
+    The files must sit directly in public_html (public_html/index.html), not in a subfolder.
+    If you used GitHub's "Download ZIP" instead, it adds a folder such as redesigned-nobuhle-main/.
+    Move that folder's contents up into public_html.
+[ ] Delete the zip from public_html after extracting.
+[ ] Hidden files: File Manager → Settings → tick "Show Hidden Files (dotfiles)".
+    Check that .htaccess, uploads/.htaccess, admin/.htaccess and admin/storage/.htaccess are all there.
+    (Extracting on the server keeps them. Unzipping on Windows first and re-uploading can lose them.)
+    README.md and this checklist can stay; .htaccess blocks them from the web.
 
 PERMISSIONS
 [ ] Folders: data/, uploads/, admin/, admin/storage/ → 755

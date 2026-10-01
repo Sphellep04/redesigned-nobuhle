@@ -41,10 +41,18 @@ admin/                The site editor (PHP)
 
 ## Deploying to Namecheap (cPanel)
 
-See [DEPLOYMENT_CHECKLIST.txt](DEPLOYMENT_CHECKLIST.txt). In short: upload everything except `README.md`, `DEPLOYMENT_CHECKLIST.txt` and `.git*`. Make sure `data/`, `uploads/` and `admin/` are writable by PHP (755 for folders is normally enough on cPanel), then create the editor password straight away.
+Whoever has the hosting login does this. Nothing on GitHub updates the live site by itself.
 
-Requirements: PHP 7.4 or later with the `fileinfo` extension (standard on cPanel). If the `gd` extension is available, uploads are resized and converted to WebP.
+1. Get the ready-to-upload zip: `dist/nonhle-cosmetics-site.zip`, or build it with `git archive -o dist/nonhle-cosmetics-site.zip HEAD`. You can also use GitHub's **Code → Download ZIP**, but that puts everything inside an extra folder.
+2. In cPanel's File Manager, back up `public_html`. Delete the old site's `upload_handler.php`, because the old version must not stay online.
+3. Upload the zip to `public_html` and **Extract** it there, so `index.html` sits directly in `public_html`.
+4. Open `/admin/` straight away and create the editor password.
 
+The full step-by-step, including what to test afterwards, is in [DEPLOYMENT_CHECKLIST.txt](DEPLOYMENT_CHECKLIST.txt).
+
+Requirements: PHP 7.4 or later with the `fileinfo` extension (standard on cPanel; the old site already ran PHP). If the `gd` extension is available, uploads are resized and converted to WebP.
+
+**After changing CSS or JS:** bump the `?v=` number on `styles.css` and `main.js` in `index.html` so returning visitors get the new files. Browsers cache them for 7 days. The editor's files are versioned automatically.
 ## How it fits together
 
 - `assets/js/main.js` loads `data/content.json` and renders the shop, services, gallery and contact details. The basket is stored in the visitor's browser (`localStorage`). Orders, bookings and contact messages open `wa.me/<number>?text=…` with the message pre-filled.

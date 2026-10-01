@@ -10,7 +10,7 @@
   --umber: #6E4334;       /* logo brown, secondary text and accents */
   --muted: #6F5A4D;       /* tertiary text, 5.4:1 on shea */
   --gold: #E0A23A;        /* logo line art; decorative or on dark only */
-  --gold-ink: #8A5A10;    /* gold that passes AA on light */
+  --gold-ink: #7E520E;    /* gold that passes AA on every light background (5:1+) */
   --espresso: #22160F;    /* dark bands */
   --on-dark: #F3EADF;
   --on-dark-muted: #CDBBA8;
@@ -244,6 +244,14 @@ h3 { font: 600 var(--step-0)/1.3 var(--sans); }
 }
 .add-btn:hover { background: var(--ink); color: var(--shea); }
 .add-btn.added { background: var(--umber); border-color: var(--umber); color: var(--shea); }
+.add-btn[disabled] { border-color: var(--line); color: var(--muted); cursor: not-allowed; background: none; }
+.product-media { position: relative; }
+.is-sold-out .product-media img, .is-sold-out .product-media .ph { opacity: .55; filter: grayscale(.4); }
+.badge {
+  position: absolute; top: 12px; left: 12px;
+  background: var(--ink); color: var(--shea); padding: 6px 10px;
+  font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+}
 
 /* Placeholder until the client uploads a photo */
 .ph {

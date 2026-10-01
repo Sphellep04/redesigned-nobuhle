@@ -14,3 +14,6 @@ Some media imaages/
 *.log
 .DS_Store
 Thumbs.db
+
+# Built upload zip (make with: git archive -o dist/nonhle-cosmetics-site.zip HEAD)
+dist/

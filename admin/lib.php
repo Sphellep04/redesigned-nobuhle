@@ -242,6 +242,7 @@ function sanitize_content(array $in): array
             'id' => clean_text($p['id'] ?? '', 60),
             'name' => clean_text($p['name'], 120),
             'price' => clean_price($p['price'] ?? 0),
+            'soldOut' => !empty($p['soldOut']),
             'size' => clean_text($p['size'] ?? '', 40),
             'summary' => clean_text($p['summary'] ?? '', 200),
             'description' => clean_text($p['description'] ?? '', 1500),

@@ -59,7 +59,7 @@ $h = static function (string $s): string {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400&family=Hanken+Grotesk:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="admin.css?v=<?= filemtime(__DIR__ . '/admin.css') ?>">
 </head>
 <body>
 <?php if ($mode !== 'editor'): ?>
@@ -193,6 +193,7 @@ $h = static function (string $s): string {
             <label>Price (N$)<input data-f="price" type="number" min="0" step="0.01" inputmode="decimal"></label>
             <label>Size <small>Optional</small><input data-f="size" maxlength="40" placeholder="e.g. 100 ml"></label>
           </div>
+          <label class="check"><input type="checkbox" data-f="soldOut"> Sold out <small>(stays on the site but can't be ordered)</small></label>
           <label>Short description <small>Shown on the shop card</small><input data-f="summary" maxlength="200"></label>
           <label>Full description<textarea data-f="description" rows="4" maxlength="1500"></textarea></label>
           <label>Ingredients<textarea data-f="ingredients" rows="2" maxlength="800"></textarea></label>
@@ -231,7 +232,7 @@ $h = static function (string $s): string {
     </details>
   </template>
 
-  <script src="admin.js" defer></script>
+  <script src="admin.js?v=<?= filemtime(__DIR__ . '/admin.js') ?>" defer></script>
 <?php endif; ?>
 </body>
 </html>
