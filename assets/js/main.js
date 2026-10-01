@@ -464,7 +464,6 @@
       <button class="gallery-item" type="button" data-lb-open="${i}" aria-label="Open photo ${i + 1}${x.caption ? `: ${esc(x.caption)}` : ''}">
         <img src="${esc(x.src)}" alt="${esc(x.caption || 'Recent work by Nonhle\'s Cosmetics')}" loading="lazy"${x.w && x.h ? ` width="${Number(x.w)}" height="${Number(x.h)}"` : ''}>
       </button>`).join('');
-    g.style.setProperty('--cols', Math.min(3, items.length));
     state.galleryItems = items;
   }
 

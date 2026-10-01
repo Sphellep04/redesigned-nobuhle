@@ -78,9 +78,9 @@ Requirements: PHP 7.4 or later with the `fileinfo` extension (standard on cPanel
 
 ## Photo credits
 
-The hero, wash-day and services photos are free photos from Unsplash under the [Unsplash License](https://unsplash.com/license):
+The hero and services photos are free photos from Unsplash under the [Unsplash License](https://unsplash.com/license):
 
 - Hero: [Profile of a woman with a braided ponytail](https://unsplash.com/photos/QS9ZX5UnS14)
 - Services: [Woman among golden leaves](https://unsplash.com/photos/FXB39F3n6NM)
 
-The product photos, the wash-day image (cropped from the brand poster), the founder portrait, the nail photos and the logo belong to Nonhle's Cosmetics.
+The product photos, the founder portrait, the nail photos and the logo belong to Nonhle's Cosmetics.

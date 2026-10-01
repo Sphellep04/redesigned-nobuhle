@@ -8,7 +8,7 @@
   --paper: #FBF6EF;       /* raised surfaces */
   --ink: #241812;         /* text */
   --umber: #6E4334;       /* logo brown, secondary text and accents */
-  --muted: #6F5A4D;       /* tertiary text, 5.4:1 on shea */
+  --muted: #5A463A;       /* secondary text, 7.4:1 on shea */
   --gold: #E0A23A;        /* logo line art; decorative or on dark only */
   --gold-ink: #7E520E;    /* gold that passes AA on every light background (5:1+) */
   --espresso: #22160F;    /* dark bands */
@@ -20,8 +20,8 @@
   --serif: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
   --sans: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
 
-  --step--1: clamp(.82rem, .8rem + .1vw, .88rem);
-  --step-0: clamp(1rem, .97rem + .15vw, 1.08rem);
+  --step--1: clamp(.86rem, .84rem + .1vw, .92rem);
+  --step-0: clamp(1.0625rem, 1rem + .2vw, 1.125rem);
   --step-1: clamp(1.2rem, 1.1rem + .4vw, 1.4rem);
   --step-2: clamp(1.5rem, 1.3rem + .9vw, 2rem);
   --step-3: clamp(2.1rem, 1.6rem + 2.2vw, 3.5rem);
@@ -40,7 +40,9 @@ body {
   margin: 0;
   background: var(--shea);
   color: var(--ink);
-  font: 400 var(--step-0)/1.6 var(--sans);
+  font: 400 var(--step-0)/1.65 var(--sans);
+  /* Bodoni Moda's small optical size has sturdier hairlines; serif text below heading size uses it. */
+  font-variation-settings: "opsz" 11;
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
 }
@@ -71,8 +73,9 @@ p { margin: 0; }
   color: var(--umber);
   margin-bottom: 18px;
 }
-h1, h2 { font-family: var(--serif); font-optical-sizing: auto; letter-spacing: -.015em; }
-h1 em, h2 em { font-style: italic; font-weight: 400; color: var(--umber); }
+/* A mid optical size keeps the Didone character without the thinnest display hairlines. */
+h1, h2 { font-family: var(--serif); font-variation-settings: "opsz" 28; letter-spacing: -.01em; }
+h1 em, h2 em { font-style: italic; font-weight: 500; color: var(--umber); }
 h2 { font-size: var(--step-3); line-height: 1.02; }
 h3 { font: 600 var(--step-0)/1.3 var(--sans); }
 .section-note { color: var(--muted); max-width: 46ch; }
@@ -166,7 +169,7 @@ h3 { font: 600 var(--step-0)/1.3 var(--sans); }
   gap: clamp(32px, 6vw, 96px); align-items: center;
 }
 .hero h1 { font-size: var(--step-4); line-height: .96; margin-bottom: 28px; }
-.hero h1 em { display: block; }
+.hero h1 em { display: block; margin-top: .06em; }
 .lede { font-size: var(--step-1); line-height: 1.5; color: var(--muted); max-width: 40ch; }
 .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
 
@@ -193,19 +196,11 @@ h3 { font: 600 var(--step-0)/1.3 var(--sans); }
 .hero-copy > :nth-child(4) { animation-delay: .24s; }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 
-/* ---------- Promise band ---------- */
-.promise { border-block: 1px solid var(--line); }
-.promise-inner {
-  display: flex; justify-content: space-between; align-items: center; gap: 16px;
-  padding-block: 22px;
-  font: 600 var(--step--1)/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; color: var(--umber);
-}
-.promise svg { width: 14px; height: 18px; color: var(--gold-ink); flex: none; }
-
 /* ---------- Sections ---------- */
 .section { padding-block: var(--section); }
+.shop { border-top: 1px solid var(--line); }
 .section-head {
-  display: flex; justify-content: space-between; align-items: end; gap: 32px 64px; flex-wrap: wrap;
+  display: flex; justify-content: space-between; align-items: baseline; gap: 16px 64px; flex-wrap: wrap;
   margin-bottom: clamp(40px, 5vw, 64px);
 }
 .loading { color: var(--muted); }
@@ -222,7 +217,7 @@ h3 { font: 600 var(--step-0)/1.3 var(--sans); }
 }
 .product-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
 .product-media:hover img { transform: scale(1.03); }
-.product h3 { font: 500 var(--step-1)/1.15 var(--serif); margin-bottom: 6px; }
+.product h3 { font: 600 var(--step-1)/1.25 var(--sans); letter-spacing: -.005em; margin-bottom: 6px; }
 .product h3 button {
   all: unset; cursor: pointer;
   background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
@@ -264,25 +259,21 @@ h3 { font: 600 var(--step-0)/1.3 var(--sans); }
 .ph svg { width: 26%; height: auto; opacity: .55; }
 
 /* ---------- Routine ---------- */
+/* Four steps read left to right as a sequence; each opens with its number on a rule. */
 .routine { background: var(--shea-deep); }
-.routine-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(40px, 7vw, 112px); align-items: start; }
-.routine-photo { position: sticky; top: calc(var(--header-h) + 32px); justify-self: center; width: min(100%, 400px); }
-.routine-photo img { width: 100%; aspect-ratio: 1 / 2; max-height: calc(100vh - var(--header-h) - 64px); object-fit: cover; object-position: 50% 45%; }
-.routine-copy h2 { margin-bottom: 20px; }
-.steps { list-style: none; margin: 48px 0 0; padding: 0; }
-.steps li {
-  display: grid; grid-template-columns: 64px 1fr; gap: 20px;
-  padding-block: 28px; border-top: 1px solid var(--line);
+.steps {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px clamp(24px, 3vw, 48px);
 }
-.steps li:last-child { border-bottom: 1px solid var(--line); }
-.step-n { font: italic 400 2.6rem/1 var(--serif); color: var(--gold-ink); }
-.steps h3 { font: 500 var(--step-2)/1.1 var(--serif); margin-bottom: 8px; }
-.steps p { color: var(--muted); max-width: 52ch; margin-bottom: 6px; }
+.steps li { display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 1px solid var(--ink); }
+.steps li > div { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.step-n { font: 600 var(--step--1)/1 var(--sans); letter-spacing: .08em; color: var(--gold-ink); font-variant-numeric: lining-nums; }
+.steps h3 { font: 600 var(--step-1)/1.25 var(--sans); }
+.steps p { color: var(--muted); }
+.steps .text-link { margin-top: auto; align-self: start; }
 
 /* ---------- Services (dark band) ---------- */
 .services { background: var(--espresso); color: var(--on-dark); }
-.services .eyebrow { color: var(--gold); }
-.services h2 em { color: var(--gold); }
 .services .section-note { color: var(--on-dark-muted); }
 .services-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(40px, 7vw, 112px); align-items: center; }
 .services-copy h2 { margin-bottom: 20px; }
@@ -294,7 +285,7 @@ h3 { font: 600 var(--step-0)/1.3 var(--sans); }
   padding-block: 26px; border-top: 1px solid var(--line-dark);
 }
 .service:last-child { border-bottom: 1px solid var(--line-dark); }
-.service h3 { font: 500 var(--step-2)/1.1 var(--serif); }
+.service h3 { font: 600 var(--step-1)/1.25 var(--sans); }
 .service p { grid-column: 1; color: var(--on-dark-muted); font-size: .95rem; }
 .service-price { grid-column: 2; grid-row: 1 / span 2; text-align: right; font-variant-numeric: tabular-nums; }
 .service-price strong { display: block; font-weight: 600; }
@@ -304,37 +295,30 @@ h3 { font: 600 var(--step-0)/1.3 var(--sans); }
 .services .loading { color: var(--on-dark-muted); padding-block: 24px; }
 
 /* ---------- Gallery ---------- */
-.gallery { columns: var(--cols, 3) 260px; column-gap: clamp(12px, 1.6vw, 20px); }
+/* Even grid: photos are cropped to one shape here; the lightbox shows them whole. */
+.gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(10px, 1.6vw, 20px); }
 .gallery-item {
   display: block; width: 100%; padding: 0; border: 0; background: var(--shea-deep); cursor: zoom-in;
-  margin-bottom: clamp(12px, 1.6vw, 20px); break-inside: avoid;
+  aspect-ratio: 4 / 5; overflow: hidden;
 }
-.gallery-item img { width: 100%; height: auto; transition: opacity .3s; }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: opacity .3s; }
 .gallery-item:hover img { opacity: .88; }
 .gallery-empty {
-  column-span: all;
+  grid-column: 1 / -1;
   display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center;
   padding: clamp(28px, 4vw, 48px); border: 1px solid var(--line);
 }
 .gallery-empty svg { width: 44px; height: 57px; color: var(--gold-ink); }
 .gallery-empty p { color: var(--muted); max-width: 52ch; }
-.gallery-empty strong { display: block; color: var(--ink); font: 500 var(--step-1)/1.2 var(--serif); margin-bottom: 4px; }
+.gallery-empty strong { display: block; color: var(--ink); font: 600 var(--step-1)/1.25 var(--sans); margin-bottom: 4px; }
 
 /* ---------- About ---------- */
 .about { border-top: 1px solid var(--line); }
 .about-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(48px, 8vw, 128px); align-items: center; }
 .about-photo { position: relative; }
 .about-photo > img:first-child { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
-.about-stamp {
-  position: absolute; right: -9%; bottom: -8%; width: clamp(120px, 38%, 190px);
-  background: var(--shea); border-radius: 50%; padding: 6px;
-}
 .about-copy h2 { margin-bottom: 28px; }
-.about-copy > p:not(.eyebrow) { max-width: 56ch; margin-bottom: 16px; }
-.facts { display: grid; grid-template-columns: repeat(3, 1fr); margin: 40px 0 0; border-top: 1px solid var(--line); }
-.facts div { padding: 20px 16px 0 0; }
-.facts dt { font-size: var(--step--1); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-.facts dd { margin: 0; font: 500 var(--step-1)/1.2 var(--serif); }
+.about-copy > p { max-width: 56ch; margin-bottom: 16px; }
 
 /* ---------- Contact ---------- */
 .contact { background: var(--shea-deep); }
@@ -418,7 +402,7 @@ body.has-dialog { overflow: hidden; }
 }
 .basket-thumb { width: 64px; aspect-ratio: 4 / 5; overflow: hidden; background: var(--shea-deep); }
 .basket-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.basket-item h3 { font: 500 1.05rem/1.2 var(--serif); margin-bottom: 8px; }
+.basket-item h3 { font: 600 1rem/1.3 var(--sans); margin-bottom: 8px; }
 .basket-line { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; font-size: .95rem; }
 .basket-line .remove { display: block; margin-top: 6px; margin-left: auto; font-size: .8rem; font-weight: 500; color: var(--muted); }
 .basket-empty { color: var(--muted); padding-block: 32px; }
@@ -493,10 +477,8 @@ body.has-dialog { overflow: hidden; }
   .hero-art { width: min(78%, 420px); order: -1; margin-top: 12px; }
   .hero h1 em { display: inline; }
 
-  .routine-grid, .services-grid, .about-grid, .contact-grid { grid-template-columns: 1fr; }
-  .routine-photo { position: static; }
-  .routine-photo { width: min(100%, 360px); }
-  .routine-photo img { aspect-ratio: 4 / 5; }
+  .services-grid, .about-grid, .contact-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .services-photo img { aspect-ratio: 16 / 10; object-position: 60% 30%; }
   .services-photo { order: -1; }
   .about-photo { width: min(88%, 460px); }
@@ -508,9 +490,7 @@ body.has-dialog { overflow: hidden; }
 @media (max-width: 600px) {
   .basket-btn { padding: 0 12px; }
   .brand-name { font-size: 1.25rem; }
-  .promise-inner { flex-direction: column; gap: 12px; letter-spacing: .16em; }
-  .promise-inner svg { display: none; }
-  .routine-photo { display: none; }
+  .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .product-grid { grid-template-columns: 1fr 1fr; gap: 28px 14px; }
   .product h3 { font-size: 1.1rem; }
   .product-summary { display: none; }
@@ -519,11 +499,7 @@ body.has-dialog { overflow: hidden; }
   .service { grid-template-columns: 1fr auto; }
   .service .btn { grid-column: 1 / -1; grid-row: auto; width: 100%; }
   .service-price { grid-column: 2; grid-row: 1; }
-  .steps li { grid-template-columns: 40px 1fr; gap: 14px; }
-  .step-n { font-size: 2rem; }
-  .facts { grid-template-columns: 1fr; }
-  .facts div { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--line); }
-  .facts dt { margin: 0; }
+  .steps { grid-template-columns: 1fr; gap: 32px; }
   .contact-list div { grid-template-columns: 1fr; gap: 4px; }
   .field-row { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
