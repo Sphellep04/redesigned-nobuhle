@@ -41,16 +41,24 @@ admin/                The site editor (PHP)
 
 ## Deploying to Namecheap (cPanel)
 
-Whoever has the hosting login does this. Nothing on GitHub updates the live site by itself.
+This repository is the source of truth: what's on `main` is what goes live. Deploying needs the hosting (cPanel) login, because pushing to GitHub doesn't update the live site by itself.
 
-1. Get the ready-to-upload zip: `dist/nonhle-cosmetics-site.zip`, or build it with `git archive -o dist/nonhle-cosmetics-site.zip HEAD`. You can also use GitHub's **Code → Download ZIP**, but that puts everything inside an extra folder.
-2. In cPanel's File Manager, back up `public_html`. Delete the old site's `upload_handler.php`, because the old version must not stay online.
-3. Upload the zip to `public_html` and **Extract** it there, so `index.html` sits directly in `public_html`.
+**Option A: upload from GitHub (simplest)**
+
+1. On GitHub, select **Code → Download ZIP**.
+2. In cPanel's File Manager, back up `public_html` and delete the old site's `upload_handler.php`, because the old version must not stay online.
+3. Upload the zip to `public_html`, **Extract** it, and move the contents of the extracted folder (e.g. `redesigned-nobuhle-main/`) up into `public_html`, so `index.html` sits directly in `public_html`.
 4. Open `/admin/` straight away and create the editor password.
+
+**Option B: cPanel Git Version Control (for repeat deploys)**
+
+cPanel's **Git™ Version Control** can clone this repository and pull updates. The repo is private, so add an SSH deploy key in GitHub first. Then copy the files into `public_html`.
 
 The full step-by-step, including what to test afterwards, is in [DEPLOYMENT_CHECKLIST.txt](DEPLOYMENT_CHECKLIST.txt).
 
 Requirements: PHP 7.4 or later with the `fileinfo` extension (standard on cPanel; the old site already ran PHP). If the `gd` extension is available, uploads are resized and converted to WebP.
+
+**Redeploying later:** content edited in the editor lives on the server (`data/content.json`, `uploads/`, `admin/config.php`). When you upload a new version of the code, don't overwrite those three, or the owner's changes and password will be lost.
 
 **After changing CSS or JS:** bump the `?v=` number on `styles.css` and `main.js` in `index.html` so returning visitors get the new files. Browsers cache them for 7 days. The editor's files are versioned automatically.
 ## How it fits together
