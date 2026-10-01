@@ -40,7 +40,7 @@
   }
   window.addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 
-  const money = (n) => (Number(n) > 0 ? 'N$ ' + Number(n).toLocaleString('en-ZA', { maximumFractionDigits: 2 }) : 'Price on request');
+  const money = (n) => (Number(n) > 0 ? 'N$ ' + Number(n).toLocaleString('en-GB', { maximumFractionDigits: 2 }) : 'Price on request');
   const preview = (src) => (src ? `<img src="../${src}" alt="">` : '<span class="ph">No photo</span>');
 
   // ---------- tabs ----------

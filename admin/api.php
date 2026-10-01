@@ -33,6 +33,9 @@ switch ($action) {
         }
         $before = load_content();
         $clean = sanitize_content($body['content']);
+        if ($clean['settings']['whatsapp'] === '') {
+            json_out(['error' => 'Add a WhatsApp number in Settings. Orders and bookings are sent to it.'], 400);
+        }
         if (!save_content($clean)) {
             json_out(['error' => 'Changes couldn\'t be saved. Check that the data folder is writable.'], 500);
         }

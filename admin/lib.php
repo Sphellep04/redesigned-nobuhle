@@ -329,7 +329,11 @@ function remove_dropped_images(array $before, array $after): void
  */
 function store_uploaded_image(array $file, string $prefix): array
 {
-    $err = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+    // One file per request; anything else (e.g. file[] arrays) is not a valid upload.
+    if (!is_string($file['tmp_name'] ?? null) || !is_int($file['error'] ?? null)) {
+        throw new RuntimeException('The photo didn\'t upload. Try again.');
+    }
+    $err = $file['error'];
     if ($err === UPLOAD_ERR_INI_SIZE || $err === UPLOAD_ERR_FORM_SIZE) {
         throw new RuntimeException('That photo is too large. Use one under 10 MB.');
     }
@@ -349,7 +353,13 @@ function store_uploaded_image(array $file, string $prefix): array
     }
     [$w, $h] = $info;
     if ($w < 1 || $h < 1 || $w * $h > 40000000) {
-        throw new RuntimeException('That image\'s dimensions aren\'t supported.');
+        throw new RuntimeException('That photo is too large to process. Use one under 40 megapixels, or resize it first.');
+    }
+    // Decoding a big phone photo needs roughly width × height × 5 bytes; shared hosting often defaults to 128 MB.
+    $needed = (int) ($w * $h * 5) + 32 * 1024 * 1024;
+    $limit = ini_get('memory_limit');
+    if ($limit !== '-1' && $needed > (int) ini_parse_quantity_safe((string) $limit)) {
+        @ini_set('memory_limit', (string) $needed);
     }
 
     if (!is_dir(UPLOAD_DIR)) {
@@ -414,6 +424,19 @@ function store_uploaded_image(array $file, string $prefix): array
         throw new RuntimeException('The photo couldn\'t be saved. Check that the uploads folder is writable.');
     }
     return ['src' => 'uploads/' . $file, 'w' => $w, 'h' => $h];
+}
+
+/** "128M" → bytes. ini_parse_quantity() only exists from PHP 8.2. */
+function ini_parse_quantity_safe(string $value): int
+{
+    $value = trim($value);
+    $n = (int) $value;
+    switch (strtolower(substr($value, -1))) {
+        case 'g': return $n * 1024 * 1024 * 1024;
+        case 'm': return $n * 1024 * 1024;
+        case 'k': return $n * 1024;
+    }
+    return $n;
 }
 
 function json_out(array $data, int $status = 200): void

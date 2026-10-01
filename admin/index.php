@@ -151,7 +151,7 @@ $h = static function (string $s): string {
         </div>
       </div>
       <div class="card form-grid" data-settings>
-        <label>WhatsApp number <small>With country code, e.g. 264811685043</small><input name="whatsapp" inputmode="tel"></label>
+        <label>WhatsApp number <small>With country code, e.g. 264811685043</small><input name="whatsapp" inputmode="tel" required></label>
         <label>Email<input name="email" type="email"></label>
         <label>Opening hours <small>Optional, e.g. Mon–Sat, 9:00–17:00</small><input name="hours"></label>
         <label>Location <small>Optional, e.g. Windhoek, Namibia</small><input name="location"></label>

@@ -21,7 +21,8 @@
 
   // ---------- helpers ----------
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const money = (n) => 'N$ ' + Number(n).toLocaleString('en-ZA', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }).replace(/ /g, ' ');
+  // N$ 1,250 / N$ 99.50 (en-ZA gives a comma decimal in some browsers)
+  const money = (n) => 'N$ ' + Number(n).toLocaleString('en-GB', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
   const hasPrice = (item) => Number(item.price) > 0;
   const digits = (s) => String(s || '').replace(/\D/g, '');
   const safeSrc = (src) => (/^(uploads\/|assets\/)[\w\-./]+$/.test(src || '') ? src : '');
@@ -31,8 +32,10 @@
 
   function whatsapp(message) {
     const url = `https://wa.me/${digits(state.settings.whatsapp)}?text=${encodeURIComponent(message)}`;
-    const win = window.open(url, '_blank', 'noopener');
-    if (!win) window.location.href = url;
+    // Not window.open(..., 'noopener'): that always returns null, which would also send this tab away.
+    const win = window.open(url, '_blank');
+    if (win) win.opener = null;
+    else window.location.href = url;  // pop-up blocked: go there in this tab instead
     return url;
   }
 
@@ -95,7 +98,10 @@
       a.href = `https://wa.me/${wa}`;
       if (!a.classList.contains('wa-float')) a.textContent = a.closest('.footer-contact') ? `WhatsApp ${waDisplay}` : waDisplay;
     });
-    if (s.email) $$('[data-setting-link="email"]').forEach((a) => { a.href = `mailto:${s.email}`; a.textContent = s.email; });
+    $$('[data-setting-link="email"]').forEach((a) => {
+      if (s.email) { a.href = `mailto:${s.email}`; a.textContent = s.email; }
+      (a.closest('[data-setting-row]') || a).hidden = !s.email;
+    });
     ['hours', 'location'].forEach((k) => {
       const row = $(`[data-setting-row="${k}"]`);
       if (s[k]) { $(`[data-setting="${k}"]`).textContent = s[k]; row.hidden = false; }
